@@ -17,8 +17,8 @@ def parseFile(filename):
 		for point in sequence.iter('Point'):
 			x = point.find('X').text
 			y = point.find('Y').text
-			xpoints.append(x)
-			ypoints.append(y)
+			xpoints.append(int(x))
+			ypoints.append(int(y))
 
 		X.append(xpoints)
 		Y.append(ypoints)
