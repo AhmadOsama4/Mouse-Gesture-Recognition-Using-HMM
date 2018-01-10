@@ -1,6 +1,6 @@
 import math
 
-# levels => number of quantized levels
+# levels => number of quantizing levels
 def quantize(X, Y, levels):
 	observations = []
 	quantizing_angle = 2 * math.pi / levels
