@@ -110,6 +110,7 @@ class DiscreteHMM(object):
 			div = self.gamma[i, :, :].sum()			
 			for j in range(1, N):
 				self.trans_prob[i][j] = self.gamma[i, j, :].sum() / div
+				print str(i) + ' ' + str(j) + ' ' + str(self.trans_prob[i][j])
 
 
 		#update emission prob
@@ -117,24 +118,19 @@ class DiscreteHMM(object):
 			div = self.gamma[i, :, :].sum()
 			for j in range(self.num_emissions):
 				indexes = (sequence == j)
-				print indexes
-				indexes = np.append(indexes, np.array([False]))
-				print indexes
-				print self.gamma.shape
-				print ''
-				#print np.array(sequence).shape
-				#print indexes.shape
-				#print div
-				self.emission_prob[i][j] = self.gamma[i, :, indexes] / div 
+				indexes = np.append(indexes, np.array([False]) )				
+				
+				self.emission_prob[i][j] = self.gamma[i, :, indexes].sum() / div 
 
 	#train using forward backward (Baum-Welch) algorithm
-	def train(self, sequences, num_epoches = 100):
-		num_epoches = 1
+	def train(self, sequences, num_epoches = 1):
 		for epoche in range(num_epoches):
 			for sequence in sequences:
-				self.Run(np.array(sequence))	
+				for c in range(1):
+					self.Run(np.array(sequence))
+					print ' \n '	
 				break
-			break			
+			break
 
 	def predict(self, sequence):
 		return self.forward(sequence)
