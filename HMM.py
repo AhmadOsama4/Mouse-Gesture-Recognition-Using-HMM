@@ -29,16 +29,16 @@ class DiscreteHMM(object):
 	def forward(self, sequence):
 		N = self.num_states + 2
 		K = len(sequence)
-		self.alpha = np.zeros((N, K))
-
+		self.alpha = np.zeros((N, K))	
+		
 		for i in range(1, N - 1): # initialize with trans prob from initial state
 			self.alpha[i][0] = self.trans_prob[0][i] * self.emission_prob[i][sequence[0]]
 
 		for k in range(1, K): # sequence length
 			for i in range(1, N - 1): #current states
 				for j in range(1, N - 1): # previous state
-					self.alpha[i][k] += self.alpha[j][k - 1] * self.trans_prob[j][i] * self.emission_prob[i][sequence[k]]
-					
+					self.alpha[i][k] += self.alpha[j][k - 1] * self.trans_prob[j][i] * self.emission_prob[i][sequence[k]]				
+
 		prob = 0.0
 		for i in range(1, N - 1):
 			prob += self.alpha[i][K - 1] * self.trans_prob[i][N - 1]
@@ -72,7 +72,7 @@ class DiscreteHMM(object):
 		N = self.num_states + 2
 		self.gamma = np.zeros((N, N, limit + 1))
 		#print self.gamma.shape
-		#EPS = 1e-18
+		EPS = 1e-18
 
 		for k in range(1, limit + 1):
 			for i in range(1, N - 1):
@@ -90,6 +90,7 @@ class DiscreteHMM(object):
 		for i in range(1, N - 1):
 			self.gamma[0][i][0] = self.trans_prob[0][i] * self.beta[i][0] / P
 		
+		self.gamma = np.maximum(self.gamma, np.ones((N, N, limit + 1)) * EPS)
 		#for i in range(1, N - 1):
 			#from initial state
 			#self.gamma[0][i][0] = self.beta[i][0] * self.trans_prob[0][i]
@@ -98,11 +99,11 @@ class DiscreteHMM(object):
 		FP = self.forward(sequence)		
 		BP = self.backward(sequence)
 		
-		print '\nForward Prob is ' + str(FP)
-		print 'Backward Prob is ' + str(BP)
+		#print '\nForward Prob is ' + str(FP)
+		#print 'Backward Prob is ' + str(BP)
 
 		self.buildGamma(FP, len(sequence))
-		
+		EPS = 1e-11
 		
 		N = self.num_states + 2
 		#update trans prob
@@ -110,8 +111,7 @@ class DiscreteHMM(object):
 			div = self.gamma[i, :, :].sum()			
 			for j in range(1, N):
 				self.trans_prob[i][j] = self.gamma[i, j, :].sum() / div
-				print str(i) + ' ' + str(j) + ' ' + str(self.trans_prob[i][j])
-
+				#print str(i) + ' ' + str(j) + ' ' + str(self.trans_prob[i][j])
 
 		#update emission prob
 		for i in range(1, N - 1):
@@ -121,16 +121,22 @@ class DiscreteHMM(object):
 				indexes = np.append(indexes, np.array([False]) )				
 				
 				self.emission_prob[i][j] = self.gamma[i, :, indexes].sum() / div 
+				
+				if self.emission_prob[i][j] < EPS or np.isnan(self.emission_prob[i][j]):
+					self.emission_prob[i][j] = EPS
+				#print str(i) + ' ' + str(j) + ' ' + str(self.emission_prob[i][j])
 
 	#train using forward backward (Baum-Welch) algorithm
-	def train(self, sequences, num_epoches = 1):
+	def train(self, sequences, num_epoches = 10):
+		#idx = 1
 		for epoche in range(num_epoches):
 			for sequence in sequences:
-				for c in range(1):
+				#print '\n' + str(idx) + ') Sequence: of length ' + str(len(sequence))
+				#idx = idx + 1
+				for c in range(10):
 					self.Run(np.array(sequence))
-					print ' \n '	
-				break
-			break
+				#break
+			#break
 
 	def predict(self, sequence):
 		return self.forward(sequence)
