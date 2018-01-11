@@ -1,7 +1,7 @@
 import numpy as np
 import math
 
-class DiscreteHMM(object):
+class DiscreteHMM():
 	def __init__(self, no_of_states, no_of_emissions):
 		self.num_states = no_of_states
 		self.num_emissions = no_of_emissions
@@ -131,10 +131,7 @@ class DiscreteHMM(object):
 		#idx = 1
 		for epoche in range(num_epoches):
 			for sequence in sequences:
-				#print '\n' + str(idx) + ') Sequence: of length ' + str(len(sequence))
-				#idx = idx + 1
-				for c in range(10):
-					self.Run(np.array(sequence))
+				self.Run(np.array(sequence))
 				#break
 			#break
 
