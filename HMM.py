@@ -14,12 +14,15 @@ class DiscreteHMM(object):
 		
 		self.normalize()
 		
+		print self.emission_prob[1].sum()
+
 	def normalize(self):
+		'''
 		self.trans_prob[self.num_states - 1] = 0 # transition from final state to any other state
 		self.trans_prob[:, 0] = 0 #transition from any state to initial state
 		self.trans_prob[0][self.num_states - 1] = 0 # transtion from initial to final state
 		self.trans_prob[self.num_states - 1][self.num_states - 1] = 1 #final state to final state
-
+		'''
 		#normalize probabilities
 		self.trans_prob = self.trans_prob / self.trans_prob.sum(axis = 1, keepdims = True)
 		self.emission_prob = self.emission_prob / self.emission_prob.sum(axis = 1, keepdims = True)
@@ -34,14 +37,21 @@ class DiscreteHMM(object):
 		for i in range(1, N - 1): # initialize with trans prob from initial state
 			self.alpha[i][0] = self.trans_prob[0][i] * self.emission_prob[i][sequence[0]]
 
+		#print self.alpha[i].max()
+		mn = 10
 		for k in range(1, K): # sequence length
 			for i in range(1, N - 1): #current states
+				mn = 5
 				for j in range(1, N - 1): # previous state
 					self.alpha[i][k] += self.alpha[j][k - 1] * self.trans_prob[j][i] * self.emission_prob[i][sequence[k]]
+					mn = min(mn, self.alpha[i][k])
+				#print self.alpha[i, :K - 1].min()
+				print mn 
 
 		prob = 0.0
 		for i in range(1, N - 1):
 			prob += self.alpha[i][K - 1] * self.trans_prob[i][N - 1]
+			#print self.alpha[i][K - 1] * self.trans_prob[i][N - 1]
 
 		return prob
 
@@ -70,6 +80,7 @@ class DiscreteHMM(object):
 	def buildGamma(self, P, sequence):
 		N = self.num_states + 2
 		self.gamma = np.zeros((N, N, len(sequence) + 1))
+		print self.gamma.shape
 
 		for k in range(1, len(sequence)):
 			for i in range(1, N):
@@ -102,13 +113,19 @@ class DiscreteHMM(object):
 			div = self.gamma[i, :, :].sum()
 			for j in range(self.num_emissions):
 				indexes = (sequence == j)
-				self.emission_prob[i][j] = self.gamma[i, :, indexes] / div 
+				indexes = np.append(indexes, np.array([False]))
+				#print np.array(sequence).shape
+				#print indexes.shape
+				#print div
+				#self.emission_prob[i][j] = self.gamma[i, :, indexes] / div 
 
 	#train using forward backward (Baum-Welch) algorithm
 	def train(self, sequences, num_epoches = 100):
+		num_epoches = 1
 		for epoche in range(num_epoches):
 			for sequence in sequences:
-				self.Run(sequence)				
+				self.Run(np.array(sequence))	
+				break			
 
 	def predict(self, sequence):
 		return self.forward(sequence)
