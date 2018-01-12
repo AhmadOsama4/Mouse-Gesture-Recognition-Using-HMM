@@ -12,7 +12,7 @@ emissions = 8
 classifier = Classifier(names, states, emissions)
 classifier.train()
 
-seq1 = getSequences('BottomLeftCorner', emissions)
+seq1 = getSequences('BottomLeftCorner', emissions, 'test')
 
 correct = 0
 total = 0
@@ -26,7 +26,7 @@ for seq in seq1:
 		print 'Class 1 Wrong'
 	total += 1
 
-seq2 = getSequences('Tick', emissions)
+seq2 = getSequences('Tick', emissions, 'test')
 for seq in seq2:
 	result = classifier.predict(seq)
 	#print result
