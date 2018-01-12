@@ -1,3 +1,3 @@
 # Mouse-Gesture-Recognition-Using-HMM
 
-Model Working on 6 Gestures, with an accuracy of 96% 
+Model Working on 8 Gestures, with an accuracy of 94% 

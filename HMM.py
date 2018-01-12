@@ -18,7 +18,9 @@ class DiscreteHMM():
 
 		self.trans_prob = np.random.rand(states * states).reshape(states, states)
 		self.emission_prob = np.random.rand(states * emissions).reshape(states, emissions)
-		
+		#self.trans_prob = np.ones((states, states))
+		#self.emission_prob = np.ones((states, emissions))
+
 		self.normalize()
 		
 	def normalize(self):
@@ -118,17 +120,35 @@ class DiscreteHMM():
 				if np.isnan(self.emission_prob[i][j]):
 					self.emission_prob[i][j] = 0
 
-		EPS = 1e-5
+		#print self.trans_prob
+		#print 'Tras Prob min ', np.amin(self.trans_prob)
+		#print 'Emission Prob min ', np.amin(self.emission_prob)
+
+		
+		#print self.trans_prob
+		#print 'Tras Prob max ', np.amax(self.trans_prob)
+		#print 'Emission Prob max ', np.amax(self.emission_prob)
+
+		EPS = 1e-8
 		self.trans_prob = np.maximum(self.trans_prob, np.ones((N, N))*EPS )
 		self.emission_prob = np.maximum(self.emission_prob, np.ones((N, self.num_emissions))*EPS )
 
+		#self.normalize()
+
+		#self.normalize()
 	#train using forward backward (Baum-Welch) algorithm
-	def train(self, sequences, num_epoches = 8):
+	def train(self, sequences, num_epoches = 5):
 		if self.trained:
 			return
 		for epoche in range(num_epoches):
+			idx = 0
 			for sequence in sequences:
 				self.Run(np.array(sequence))
+				idx = idx + 1
+				if idx % 1 == 0:
+					self.normalize()
+				if idx == 30:
+					break
 		
 		self.write_weights_to_file()
 

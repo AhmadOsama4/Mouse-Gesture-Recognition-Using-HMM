@@ -4,13 +4,16 @@ from XMLParser import *
 from Sequence import *
 from Classifier import *
 
-names = ['BottomLeftCorner', 'Tick', 'Circle', 'UpperRightCorner', 'UpperLeftCorner', 'LessThan']
+names = ['BottomLeftCorner', 'Tick', 'UpperRightCorner', 'UpperLeftCorner', 'LessThan', 'GreaterThan', 'Square', 'Triangle']
 #names = ['BottomLeftCorner', 'UpperRightCorner', 'Tick', 'Circle',  'UpperLeftCorner']
+#names = ['Triangle', 'Tick', 'LessThan']
+#names = ['Tick', 'UpperRightCorner', 'UpperLeftCorner', 'LessThan', 'GreaterThan', 'Square', 'Triangle']
+#names = ['Tick', 'UpperRightCorner', 'UpperLeftCorner', 'GreaterThan', 'Square', 'Triangle']
 
 states = 5
 emissions = 7
 
-classifier = Classifier(names, states, emissions, trained = True)
+classifier = Classifier(names, states, emissions, trained = False)
 classifier.train()
 
 correct = 0
