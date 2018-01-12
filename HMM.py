@@ -123,7 +123,7 @@ class DiscreteHMM():
 		self.emission_prob = np.maximum(self.emission_prob, np.ones((N, self.num_emissions))*EPS )
 
 	#train using forward backward (Baum-Welch) algorithm
-	def train(self, sequences, num_epoches = 10):
+	def train(self, sequences, num_epoches = 8):
 		if self.trained:
 			return
 		for epoche in range(num_epoches):
