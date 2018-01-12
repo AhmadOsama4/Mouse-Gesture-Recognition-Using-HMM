@@ -4,14 +4,15 @@ from XMLParser import *
 from Sequence import *
 from Classifier import *
 
-names = ['BottomLeftCornerGestures', 'TESTGesture']
-states = 5
-emissions = 6
+names = ['BottomLeftCorner', 'Tick']
+#names = ['BottomLeftCorner']
+states = 9
+emissions = 8
 
 classifier = Classifier(names, states, emissions)
 classifier.train()
 
-seq1 = getSequences('BottomLeftCornerGestures', emissions)
+seq1 = getSequences('BottomLeftCorner', emissions)
 
 correct = 0
 total = 0
@@ -25,9 +26,10 @@ for seq in seq1:
 		print 'Class 1 Wrong'
 	total += 1
 
-seq2 = getSequences('TESTGesture', emissions)
+seq2 = getSequences('Tick', emissions)
 for seq in seq2:
 	result = classifier.predict(seq)
+	#print result
 	if result[0] == 'T':
 		print 'Class 2 Correct'
 		correct += 1

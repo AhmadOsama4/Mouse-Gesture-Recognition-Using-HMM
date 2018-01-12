@@ -6,7 +6,7 @@ class DiscreteHMM():
 		self.num_states = no_of_states
 		self.num_emissions = no_of_emissions
 		#add 2 states for initial and final
-		states = no_of_states + 2
+		states = no_of_states
 		emissions = no_of_emissions
 
 		self.trans_prob = np.random.rand(states * states).reshape(states, states)
@@ -15,124 +15,116 @@ class DiscreteHMM():
 		self.normalize()
 		
 	def normalize(self):
-		'''
-		self.trans_prob[self.num_states - 1] = 0 # transition from final state to any other state
+		self.trans_prob[0][0] = 0 #self transition in initial state
 		self.trans_prob[:, 0] = 0 #transition from any state to initial state
-		self.trans_prob[0][self.num_states - 1] = 0 # transtion from initial to final state
-		self.trans_prob[self.num_states - 1][self.num_states - 1] = 1 #final state to final state
-		'''
+		
 		#normalize probabilities
 		self.trans_prob = self.trans_prob / self.trans_prob.sum(axis = 1, keepdims = True)
 		self.emission_prob = self.emission_prob / self.emission_prob.sum(axis = 1, keepdims = True)
 
 	#forward algorithm
 	def forward(self, sequence):
-		N = self.num_states + 2
+		N = self.num_states
 		K = len(sequence)
+
 		self.alpha = np.zeros((N, K))	
 		
-		for i in range(1, N - 1): # initialize with trans prob from initial state
-			self.alpha[i][0] = self.trans_prob[0][i] * self.emission_prob[i][sequence[0]]
+		self.alpha[0][0] = 1
 
-		for k in range(1, K): # sequence length
-			for i in range(1, N - 1): #current states
-				for j in range(1, N - 1): # previous state
+		for i in range(1, N): # initialize with trans prob from initial state
+			self.alpha[i][1] = self.trans_prob[0][i] * self.emission_prob[i][sequence[1]]
+
+		for k in range(2, K): # sequence length
+			for i in range(1, N): #current states
+				for j in range(1, N): # previous state
 					self.alpha[i][k] += self.alpha[j][k - 1] * self.trans_prob[j][i] * self.emission_prob[i][sequence[k]]				
 
-		prob = 0.0
-		for i in range(1, N - 1):
-			prob += self.alpha[i][K - 1] * self.trans_prob[i][N - 1]
+		prob = self.alpha[:, K - 1].sum()
+		#for i in range(1, N - 1):
+			#prob += self.alpha[i][K - 1] * self.trans_prob[i][N - 1]
 			#print self.alpha[i][K - 1] * self.trans_prob[i][N - 1]
 
 		return prob
 
 	#backward algorithm
 	def backward(self, sequence):
-		N = self.num_states + 2
-		K = len(sequence) + 1
+		N = self.num_states
+		K = len(sequence)
 
 		self.beta = np.zeros((N, K))
 
-		self.beta[N - 1][K - 1] = 1.0
+		for i in range(1, N):
+			self.beta[i][K - 1] = self.emission_prob[i][sequence[K - 1]]
 
-		for i in range(1, N - 1):
-			self.beta[i][K - 2] = self.trans_prob[i][N - 1] * self.emission_prob[i][sequence[K - 2]]
-
-		for k in range(len(sequence) - 2, -1, -1):
-			for i in range(1, N - 1): # current state
-				for j in range(1, N - 1): #next state
+		for k in range(K - 2, 0, -1):
+			for i in range(1, N): # current state
+				for j in range(1, N): #next state
 					self.beta[i][k] += self.beta[j][k + 1] * self.trans_prob[i][j] * self.emission_prob[i][sequence[k]]
 		prob = 0.0
-		for i in range(1, N - 1):
-			prob += self.beta[i][0] * self.trans_prob[0][i]
+		for i in range(1, N):
+			prob += self.beta[i][1] * self.trans_prob[0][i]
 
 		return prob
 
 	def buildGamma(self, P, limit):
-		N = self.num_states + 2
-		self.gamma = np.zeros((N, N, limit + 1))
-		#print self.gamma.shape
-		EPS = 1e-18
+		N = self.num_states
+		self.gamma = np.zeros((N, N, limit))
+		#print self.gamma.shape	
 
-		for k in range(1, limit + 1):
-			for i in range(1, N - 1):
+		for k in range(1, limit):
+			for i in range(N):
 				for j in range(1, N):
-					self.gamma[i][j][k] = self.alpha[i][k - 1] * self.trans_prob[i][j] * self.beta[j][k] / P
-					'''
-					if self.gamma[i][j][k] < EPS:
-						print str(i) + ' ' + str(j) + ' ' + str(k)
-						print str(self.alpha[i][k - 1]) + ' ' + str(self.trans_prob[i][j]) + ' ' + str(self.beta[j][k])
-						print 'Gamma ' + str(self.gamma[i][j][k])
-						print ''
-					'''
+					self.gamma[i][j][k] = self.alpha[i][k - 1] * self.trans_prob[i][j] * self.beta[j][k] / P	
 
-		#gamma at k = 0
-		for i in range(1, N - 1):
-			self.gamma[0][i][0] = self.trans_prob[0][i] * self.beta[i][0] / P
-		
-		self.gamma = np.maximum(self.gamma, np.ones((N, N, limit + 1)) * EPS)
-		#for i in range(1, N - 1):
-			#from initial state
-			#self.gamma[0][i][0] = self.beta[i][0] * self.trans_prob[0][i]
 
 	def Run(self, sequence):
+		#add initial unused emission for intial state 
+		sequence = np.append(np.array([-1]) , sequence)
+
 		FP = self.forward(sequence)		
 		BP = self.backward(sequence)
 		
-		#print '\nForward Prob is ' + str(FP)
+		#print '\nForward Prob is ' , FP
+		if np.isnan(FP):
+			print 'NAN'
 		#print 'Backward Prob is ' + str(BP)
 
 		self.buildGamma(FP, len(sequence))
-		EPS = 1e-11
 		
-		N = self.num_states + 2
+		N = self.num_states
 		#update trans prob
-		for i in range(N - 1):
+		for i in range(N):
 			div = self.gamma[i, :, :].sum()			
 			for j in range(1, N):
-				self.trans_prob[i][j] = self.gamma[i, j, :].sum() / div
-				#print str(i) + ' ' + str(j) + ' ' + str(self.trans_prob[i][j])
+				self.trans_prob[i][j] = self.gamma[i, j, :].sum() / div		
+				if np.isnan(self.trans_prob[i][j]):
+					self.trans_prob[i][j] = 0
+					#print i, ' ', j
+					#print self.gamma[i, j, :].sum() , ' ', div , '\n'
 
 		#update emission prob
 		for i in range(1, N - 1):
 			div = self.gamma[i, :, :].sum()
 			for j in range(self.num_emissions):
-				indexes = (sequence == j)
-				indexes = np.append(indexes, np.array([False]) )				
-				
-				self.emission_prob[i][j] = self.gamma[i, :, indexes].sum() / div 
-				
-				if self.emission_prob[i][j] < EPS or np.isnan(self.emission_prob[i][j]):
-					self.emission_prob[i][j] = EPS
-				#print str(i) + ' ' + str(j) + ' ' + str(self.emission_prob[i][j])
+				indexes = (sequence == j)				
+				self.emission_prob[i][j] = self.gamma[i, :, indexes].sum() / div 		
+				if np.isnan(self.emission_prob[i][j]):
+					self.emission_prob[i][j] = 0
+
+		EPS = 1e-5
+		self.trans_prob = np.maximum(self.trans_prob, np.ones((N, N))*EPS )
+		self.emission_prob = np.maximum(self.emission_prob, np.ones((N, self.num_emissions))*EPS )
 
 	#train using forward backward (Baum-Welch) algorithm
 	def train(self, sequences, num_epoches = 10):
-		#idx = 1
+		idx = 0
 		for epoche in range(num_epoches):
+			#print 'epoche: ', epoche
 			for sequence in sequences:
 				self.Run(np.array(sequence))
-				#break
+				#idx = idx + 1
+				#if idx == 50:
+					#break
 			#break
 
 	def predict(self, sequence):
