@@ -9,7 +9,7 @@ names = ['BottomLeftCorner', 'Tick']
 states = 9
 emissions = 8
 
-classifier = Classifier(names, states, emissions)
+classifier = Classifier(names, states, emissions, True)
 classifier.train()
 
 correct = 0

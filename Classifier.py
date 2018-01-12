@@ -10,19 +10,20 @@ class Classifier():
 		self.trained = trained
 		
 	def train(self):
-		if self.trained:
-			self.load_weights()
+		self.ClassesHMM = []
+
+		if self.trained: # load weights values if trained before
+			for name in self.names:
+				model = DiscreteHMM(self.states, self.emmissions, name, True)
+				self.ClassesHMM.append(model)
 			return
 
-		self.ClassesHMM = []
+		
 		for name in self.names:
 			sequences = getSequences(name, self.emmissions)
-			model = DiscreteHMM(self.states, self.emmissions)
+			model = DiscreteHMM(self.states, self.emmissions, name)
 			model.train(sequences)
 			self.ClassesHMM.append(model)
-
-	def load_weights(self):
-		print 'TODO:'
 
 	def predict(self, sequence):
 		predictions = []

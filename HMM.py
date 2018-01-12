@@ -1,13 +1,20 @@
 import numpy as np
 import math
+import pickle
 
 class DiscreteHMM():
-	def __init__(self, no_of_states, no_of_emissions):
+	def __init__(self, no_of_states, no_of_emissions, name, trained = False):
+		self.name = name
 		self.num_states = no_of_states
 		self.num_emissions = no_of_emissions
-		#add 2 states for initial and final
+		self.trained = trained
+
 		states = no_of_states
 		emissions = no_of_emissions
+
+		if trained:
+			self.load_weights()
+			return
 
 		self.trans_prob = np.random.rand(states * states).reshape(states, states)
 		self.emission_prob = np.random.rand(states * emissions).reshape(states, emissions)
@@ -117,15 +124,31 @@ class DiscreteHMM():
 
 	#train using forward backward (Baum-Welch) algorithm
 	def train(self, sequences, num_epoches = 10):
-		idx = 0
+		if self.trained:
+			return
 		for epoche in range(num_epoches):
-			#print 'epoche: ', epoche
 			for sequence in sequences:
 				self.Run(np.array(sequence))
-				#idx = idx + 1
-				#if idx == 50:
-					#break
-			#break
+		
+		self.write_weights_to_file()
 
 	def predict(self, sequence):
 		return self.forward(sequence)
+
+	def write_weights_to_file(self):
+		filename = 'VariablesValues/' + self.name + '.pkl'
+		
+		f = open(filename, 'wb')
+		pickle.dump(self.trans_prob, f)
+		pickle.dump(self.emission_prob, f)
+
+		f.close()
+
+	def load_weights(self):
+		filename = 'VariablesValues/' + self.name + '.pkl'
+
+		f = open(filename, 'rb')
+		self.trans_prob = pickle.load(f)
+		self.emission_prob = pickle.load(f)
+
+		f.close()
