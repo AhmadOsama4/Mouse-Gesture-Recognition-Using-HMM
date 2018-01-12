@@ -12,31 +12,18 @@ emissions = 8
 classifier = Classifier(names, states, emissions)
 classifier.train()
 
-seq1 = getSequences('BottomLeftCorner', emissions, 'test')
-
 correct = 0
 total = 0
 
-for seq in seq1:
-	result = classifier.predict(seq)
-	if result[0] == 'B':
-		print 'Class 1 Correct'
-		correct += 1
-	else:
-		print 'Class 1 Wrong'
-	total += 1
-
-seq2 = getSequences('Tick', emissions, 'test')
-for seq in seq2:
-	result = classifier.predict(seq)
-	#print result
-	if result[0] == 'T':
-		print 'Class 2 Correct'
-		correct += 1
-	else:
-		print 'Class 2 Wrong'
-	total += 1
+#Test on test data of each class
+for name in names:
+	sequences = getSequences(name, emissions, 'test')
+	for seq in sequences:
+		result = classifier.predict(seq)
+		if result == name:
+			correct += 1
+		total += 1
 
 accuracy = 1.0*correct / total
 
-print 'Accuracy ', accuracy
+print 'Model Accuracy ', accuracy

@@ -22,7 +22,7 @@ class Classifier():
 			self.ClassesHMM.append(model)
 
 	def load_weights(self):
-		print 'TODO'
+		print 'TODO:'
 
 	def predict(self, sequence):
 		predictions = []
