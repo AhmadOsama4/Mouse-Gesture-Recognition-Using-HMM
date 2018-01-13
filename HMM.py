@@ -106,20 +106,16 @@ class DiscreteHMM():
 			div = self.gamma[i, :, :].sum()			
 			for j in range(1, N):
 				self.trans_prob[i][j] = self.gamma[i, j, :].sum() / div		
-				if np.isnan(self.trans_prob[i][j]):
-					self.trans_prob[i][j] = 0
-					#print i, ' ', j
-					#print self.gamma[i, j, :].sum() , ' ', div , '\n'
-
+				
 		#update emission prob
 		for i in range(1, N - 1):
 			div = self.gamma[i, :, :].sum()
 			for j in range(self.num_emissions):
 				indexes = (sequence == j)				
-				self.emission_prob[i][j] = self.gamma[i, :, indexes].sum() / div 		
-				if np.isnan(self.emission_prob[i][j]):
-					self.emission_prob[i][j] = 0
+				self.emission_prob[i][j] = (self.gamma[i, :, indexes].sum() + 0.01) / div 		
+				
 
+		#print self.emission_prob
 		#print self.trans_prob
 		#print 'Tras Prob min ', np.amin(self.trans_prob)
 		#print 'Emission Prob min ', np.amin(self.emission_prob)
@@ -129,27 +125,26 @@ class DiscreteHMM():
 		#print 'Tras Prob max ', np.amax(self.trans_prob)
 		#print 'Emission Prob max ', np.amax(self.emission_prob)
 
-		EPS = 1e-8
-		self.trans_prob = np.maximum(self.trans_prob, np.ones((N, N))*EPS )
-		self.emission_prob = np.maximum(self.emission_prob, np.ones((N, self.num_emissions))*EPS )
+		#EPS = 1e-8
+		#self.trans_prob = np.maximum(self.trans_prob, np.ones((N, N))*EPS )
+		#self.emission_prob = np.maximum(self.emission_prob, np.ones((N, self.num_emissions))*EPS )
 
-		#self.normalize()
+		self.normalize()
 
 		#self.normalize()
 	#train using forward backward (Baum-Welch) algorithm
-	def train(self, sequences, num_epoches = 5):
+	def train(self, sequences, num_epoches = 8):
 		if self.trained:
 			return
 		for epoche in range(num_epoches):
 			idx = 0
 			for sequence in sequences:
 				self.Run(np.array(sequence))
-				idx = idx + 1
-				if idx % 1 == 0:
-					self.normalize()
-				if idx == 30:
+				idx = idx + 1				
+				if idx == 40:
 					break
-		
+			#break
+						
 		self.write_weights_to_file()
 
 	def predict(self, sequence):
