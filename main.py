@@ -5,14 +5,9 @@ from Sequence import *
 from Classifier import *
 
 names = ['BottomLeftCorner', 'Tick', 'UpperRightCorner', 'UpperLeftCorner', 'LessThan', 'GreaterThan', 'Square', 'Triangle']
-#names = ['BottomLeftCorner', 'UpperRightCorner', 'Tick', 'Circle',  'UpperLeftCorner']
-#names = ['Triangle', 'Tick', 'LessThan', 'Square', 'GreaterThan']
-#names = ['Tick', 'UpperRightCorner', 'UpperLeftCorner', 'LessThan', 'GreaterThan', 'Square', 'Triangle']
-#names = ['Tick', 'UpperRightCorner', 'UpperLeftCorner', 'GreaterThan', 'Square', 'Triangle']
-#names = ['LessThan']
 
-states = 4
-emissions = 7
+states = 5
+emissions = 8
 
 classifier = Classifier(names, states, emissions, trained = True)
 classifier.train()
@@ -22,7 +17,7 @@ total = 0
 
 #Test on test data of each class
 for name in names:
-	sequences = getSequences(name, emissions, trainORtest = 'train')
+	sequences = getSequences(name, emissions, trainORtest = 'test')
 	for seq in sequences:
 		result = classifier.predict(seq)
 		if result == name:

@@ -28,9 +28,6 @@ def quantize(X, Y, levels):
 		level = math.floor(theta / quantizing_angle)
 		cur_level = mapper[int(level)]
 
-		#ignore 2 similar consecutive levels
-		#if len(observations) > 0 and cur_level == observations[len(observations) - 1]:
-			#continue
 		observations.append(cur_level)
 
 	return observations

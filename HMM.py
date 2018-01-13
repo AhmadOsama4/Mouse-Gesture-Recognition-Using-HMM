@@ -18,9 +18,7 @@ class DiscreteHMM():
 
 		self.trans_prob = np.random.rand(states * states).reshape(states, states)
 		self.emission_prob = np.random.rand(states * emissions).reshape(states, emissions)
-		#self.trans_prob = np.ones((states, states))
-		#self.emission_prob = np.ones((states, emissions))
-
+		
 		self.normalize()
 		
 	def normalize(self):
@@ -49,10 +47,7 @@ class DiscreteHMM():
 					self.alpha[i][k] += self.alpha[j][k - 1] * self.trans_prob[j][i] * self.emission_prob[i][sequence[k]]				
 
 		prob = self.alpha[:, K - 1].sum()
-		#for i in range(1, N - 1):
-			#prob += self.alpha[i][K - 1] * self.trans_prob[i][N - 1]
-			#print self.alpha[i][K - 1] * self.trans_prob[i][N - 1]
-
+	
 		return prob
 
 	#backward algorithm
@@ -112,39 +107,19 @@ class DiscreteHMM():
 			div = self.gamma[i, :, :].sum()
 			for j in range(self.num_emissions):
 				indexes = (sequence == j)				
-				self.emission_prob[i][j] = (self.gamma[i, :, indexes].sum() + 0.01) / div 		
-				
-
-		#print self.emission_prob
-		#print self.trans_prob
-		#print 'Tras Prob min ', np.amin(self.trans_prob)
-		#print 'Emission Prob min ', np.amin(self.emission_prob)
-
-		
-		#print self.trans_prob
-		#print 'Tras Prob max ', np.amax(self.trans_prob)
-		#print 'Emission Prob max ', np.amax(self.emission_prob)
-
-		#EPS = 1e-8
-		#self.trans_prob = np.maximum(self.trans_prob, np.ones((N, N))*EPS )
-		#self.emission_prob = np.maximum(self.emission_prob, np.ones((N, self.num_emissions))*EPS )
+				self.emission_prob[i][j] = (self.gamma[i, :, indexes].sum() + 1) / div		
 
 		self.normalize()
 
-		#self.normalize()
 	#train using forward backward (Baum-Welch) algorithm
-	def train(self, sequences, num_epoches = 8):
+	def train(self, sequences, num_epoches = 4):
 		if self.trained:
 			return
 		for epoche in range(num_epoches):
 			idx = 0
 			for sequence in sequences:
 				self.Run(np.array(sequence))
-				idx = idx + 1				
-				if idx == 40:
-					break
-			#break
-						
+										
 		self.write_weights_to_file()
 
 	def predict(self, sequence):
