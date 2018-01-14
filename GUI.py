@@ -41,8 +41,10 @@ class GUI(object):
 
 	def mouseRealeased(self, event):
 		sequence = quantize(self.X, self.Y, self.levels)
+		if len(sequence) < 2:
+			tkMessageBox.showinfo('Prediction','Please Draw a shape!')
+			return
 		result = self.classifier.predict(sequence)
-
 		output = 'You have drawn a ' + result
 
 		tkMessageBox.showinfo('Prediction',output)
