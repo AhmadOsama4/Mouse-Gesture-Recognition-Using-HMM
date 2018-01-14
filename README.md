@@ -1,6 +1,6 @@
 # Mouse-Gesture-Classifer
 
-A mouse gesture classifier using Discrete Hidden Markov Model.
+A mouse gesture classifier using Discrete Hidden Markov Models.
 
 The model classifies 8 mouse gestures:
 
