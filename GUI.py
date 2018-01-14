@@ -4,7 +4,6 @@ from Classifier import *
 from Quantizer import *
 
 class GUI(object):
-	"""docstring for GUI"""
 	def __init__(self, classifier, master, levels):
 		self.X = [] # x coordinates for drawn points
 		self.Y = [] # y coordinates for drawn points
