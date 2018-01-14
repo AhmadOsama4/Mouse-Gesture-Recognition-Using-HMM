@@ -35,7 +35,7 @@ class DiscreteHMM():
 		K = len(sequence)
 
 		self.alpha = np.zeros((N, K))	
-		
+
 		self.alpha[0][0] = 1
 
 		for i in range(1, N): # initialize with trans prob from initial state

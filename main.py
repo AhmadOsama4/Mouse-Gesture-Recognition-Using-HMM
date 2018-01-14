@@ -3,6 +3,7 @@ from Quantizer import *
 from XMLParser import *
 from Sequence import *
 from Classifier import *
+from GUI import *
 
 names = ['BottomLeftCorner', 'Tick', 'UpperRightCorner', 'UpperLeftCorner', 'LessThan', 'GreaterThan', 'Square', 'Triangle']
 
@@ -29,3 +30,11 @@ for name in names:
 accuracy = 1.0*correct / total
 
 print 'Model Accuracy ', accuracy
+
+root = Tk()
+root.minsize(920, 700)
+root.title('Mouse Gesture Classifier')
+
+g = GUI(classifier, root, emissions)
+
+root.mainloop()
