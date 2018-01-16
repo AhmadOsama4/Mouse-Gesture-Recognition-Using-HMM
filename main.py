@@ -5,12 +5,15 @@ from Sequence import *
 from Classifier import *
 from GUI import *
 
-names = ['BottomLeftCorner', 'Tick', 'UpperRightCorner', 'UpperLeftCorner', 'LessThan', 'GreaterThan', 'Square', 'Triangle']
+names = ['BottomLeftCorner', 'Tick', 'UpperRightCorner', 'UpperLeftCorner', 'LessThan', 'GreaterThan', 'Square', 'Triangle', 'Circle']
 
-states = 5
-emissions = 8
+num_of_states = {'BottomLeftCorner':4, 'Tick':3, 'UpperRightCorner':4 , 'UpperLeftCorner': 4, 'LessThan':4 , 
+				 'GreaterThan':4, 'Square':5, 'Triangle':5, 'Circle':10}
 
-classifier = Classifier(names, states, emissions, trained = True)
+#states = 5
+emissions = 9
+
+classifier = Classifier(names, num_of_states, emissions, trained = True)
 classifier.train()
 
 correct = 0

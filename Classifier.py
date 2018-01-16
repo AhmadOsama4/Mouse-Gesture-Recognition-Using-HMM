@@ -3,9 +3,9 @@ from Sequence import *
 import numpy as np
 
 class Classifier():
-	def __init__(self, names, states, emmissions, trained = False):
+	def __init__(self, names, num_of_states, emmissions, trained = False):
 		self.names = names
-		self.states = states
+		self.num_of_states = num_of_states
 		self.emmissions = emmissions
 		self.trained = trained
 		
@@ -14,14 +14,14 @@ class Classifier():
 
 		if self.trained: # load weights values if trained before
 			for name in self.names:
-				model = DiscreteHMM(self.states, self.emmissions, name, True)
+				model = DiscreteHMM(self.num_of_states[name], self.emmissions, name, True)
 				self.ClassesHMM.append(model)
 			return
 
 		
 		for name in self.names:
 			sequences = getSequences(name, self.emmissions)
-			model = DiscreteHMM(self.states, self.emmissions, name)
+			model = DiscreteHMM(self.num_of_states[name], self.emmissions, name)
 			model.train(sequences)
 			self.ClassesHMM.append(model)
 
