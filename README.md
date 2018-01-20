@@ -1,4 +1,4 @@
-# Mouse-Gesture-Classifer
+# Mouse-Gesture-Recognition
 
 Youtube Test [Video](https://www.youtube.com/watch?v=dd29lo9ODI4)
 
