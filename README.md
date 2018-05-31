@@ -16,4 +16,4 @@ The model classifies 9 mouse gestures:
 8. Triangle
 9. Circle
 
-The modek works with an accuracy of 98.5%. 
+The model works with an accuracy of 98.5%. 
