@@ -90,7 +90,7 @@ class DiscreteHMM():
 		
 		#print '\nForward Prob is ' , FP
 		if np.isnan(FP):
-			print 'NAN'
+			print ('NAN')
 		#print 'Backward Prob is ' + str(BP)
 
 		self.buildGamma(FP, len(sequence))
@@ -138,7 +138,7 @@ class DiscreteHMM():
 		filename = 'VariablesValues/' + self.name + '.pkl'
 
 		f = open(filename, 'rb')
-		self.trans_prob = pickle.load(f)
-		self.emission_prob = pickle.load(f)
+		self.trans_prob = pickle.load(f, encoding='bytes')
+		self.emission_prob = pickle.load(f, encoding='bytes')
 
 		f.close()

@@ -1,5 +1,5 @@
-from Tkinter import *
-import tkMessageBox
+from tkinter import *
+from tkinter import messagebox
 from Classifier import *
 from Quantizer import *
 
@@ -43,12 +43,12 @@ class GUI(object):
 		sequence = quantize(self.X, self.Y, self.levels)
 		
 		if len(sequence) < 2:
-			tkMessageBox.showinfo('Prediction','Please Draw a shape!')
+			messagebox.showinfo('Prediction','Please Draw a shape!')
 		else:
 			result = self.classifier.predict(sequence)
 			output = 'You have drawn a ' + result
 
-			tkMessageBox.showinfo('Prediction',output)
+			messagebox.showinfo('Prediction',output)
 			
 		self.X = []
 		self.Y = []

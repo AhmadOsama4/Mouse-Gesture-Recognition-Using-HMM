@@ -27,12 +27,12 @@ for name in names:
 		if result == name:
 			correct += 1
 		else:
-			print 'Expected ', name , ' found ', result
+			print('Expected ', name , ' found ', result)
 		total += 1
 
 accuracy = 1.0*correct / total
 
-print 'Model Accuracy ', accuracy
+print('Model Accuracy ', accuracy)
 
 root = Tk()
 root.minsize(920, 700)
